@@ -2,8 +2,11 @@ var stickman = document.getElementById('scaffold');
 var wordDiv = document.getElementById('word');
 var lettersDiv = document.getElementById('letters');
 var guessesDiv = document.getElementById('guesses');
+var secretWordDiv = document.getElementById('word');
 var secretWord = "";
 var blanks = "";
+var correctGuesses = [];
+var numberOfGuesses = 0;
 
 /**
  * Initializes a new game.
@@ -45,7 +48,8 @@ function resetLetters() {
  */
 function guessLetter(elm) {
   var letter = elm.id;
-
+	var numberCount = 0;
+  var wordCount = secretWord.length;
   // Remove the letter from possible guesses element
   var node = document.getElementById(letter);
   node.parentElement.removeChild(node);
@@ -55,6 +59,47 @@ function guessLetter(elm) {
   node.innerHTML = letter;
   guessesDiv.appendChild(node);
 
+  
+  var html2 = [];
+  for(i=0; i < secretWord.length; i++) {
+    if(letter == secretWord.charAt(i).toUpperCase()){
+		correctGuesses[i] = letter;
+		html2.push('<span>' + secretWord.charAt(i) + '</span>');
+	}
+	else{
+		numberCount++;
+		if(correctGuesses[i] == secretWord.charAt(i).toUpperCase()){
+			html2.push('<span>' + secretWord.charAt(i) + '</span>');
+			
+		}
+		else{
+			html2.push('<span>' + blanks.charAt(i) + '</span>');
+		}
+	}
+  }
+  if(numberCount == wordCount){
+	  numberOfGuesses++;
+	  drawStickMan(numberOfGuesses);
+  }
+  
+  secretWordDiv.innerHTML = html2.join('');
+  
+  if(numberOfGuesses>5){
+	  var html3 = [];
+	  html3.push('<span>' +' --------------------YOU LOSE--------------------'+' </span>');
+	  wordDiv.innerHTML = html3.join('');
+  }
+  var correctNumber = 0;
+  for(i=0; i < secretWord.length; i++) {
+    if(correctGuesses[i] == secretWord.charAt(i).toUpperCase()){
+		correctNumber++;
+	}
+  }
+  if(correctNumber == wordCount){
+	  var html3 = [];
+	  html3.push('<span>' +' --------------------YOU WIN--------------------'+' </span>');
+	  guessesDiv.innerHTML = html3.join('');
+  }
   // TODO: Determine if the letter is in the secret word,
   // if so, reveal it in the secretWordDiv, otherwise
   // add a part to our hangman
@@ -97,6 +142,7 @@ function drawBlanks(){
   var html = [];
   for(i=0; i < blanks.length; i++) {
     html.push('<span>' + blanks.charAt(i) + '</span>');
+	
   }
   wordDiv.innerHTML = html.join('');
 }
